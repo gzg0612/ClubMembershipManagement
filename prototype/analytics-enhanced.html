@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会员管理系统 - 数据统计</title>
+  <!-- 引入FontAwesome图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+    }
+    .app-container {
+      display: flex;
+      width: 100%;
+    }
+    
+    /* 侧边栏样式 */
+    .sidebar {
+      width: 220px;
+      background-color: #001529;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s;
+    }
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .menu {
+      padding: 10px 0;
+      flex-grow: 1;
+    }
+    .menu-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.65);
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+    .menu-item:hover {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+    .menu-item.active {
+      color: white;
+      background-color: #1890ff;
+      border-left-color: white;
+    }
+    .sidebar-footer {
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 30px;
+      height: 30px;
+      background-color: #1890ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+    }
+    
+    /* 主内容区样式 */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #f0f2f5;
+    }
+    .header {
+      background-color: white;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      padding: 0 20px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+    }
+    .breadcrumb span {
+      margin: 0 5px;
+      color: #999;
+    }
+    .header-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .header-action {
+      font-size: 16px;
+      color: #666;
+      cursor: pointer;
+      position: relative;
+    }
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: #f5222d;
+      color: white;
+      font-size: 12px;
+      border-radius: 10px;
+      padding: 0 5px;
+      min-width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* 内容区域样式 */
+    .content {
+      padding: 20px;
+      flex-grow: 1;
+    }
+    .page-title {
+      font-size: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    /* 数据概览卡片 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 21, 41, 0.12);
+    }
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .stat-content {
+      flex: 1;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .stat-title {
+      color: #666;
+      font-size: 14px;
+    }
+    .stat-trend {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 5px;
+    }
+    .trend-up {
+      color: #f5222d;
+    }
+    .trend-down {
+      color: #52c41a;
+    }
+    
+    /* 图表卡片样式 */
+    .chart-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .chart-card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    }
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .chart-title {
+      font-size: 16px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .chart-filters {
+      display: flex;
+      gap: 15px;
+    }
+    .chart-filter {
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 13px;
+      background-color: #f5f5f5;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .chart-filter.active {
+      background-color: #e6f7ff;
+      color: #1890ff;
+    }
+    .chart-container {
+      height: 300px;
+      position: relative;
+    }
+    
+    /* 销售额图表 */
+    .sales-chart {
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      gap: 15px;
+      padding-top: 20px;
+      position: relative;
+    }
+    .chart-column {
+      flex: 1;
+      background-color: #1890ff;
+      border-radius: 4px 4px 0 0;
+      min-height: 30px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .chart-column:hover {
+      background-color: #40a9ff;
+    }
+    .chart-column::before {
+      content: attr(data-value);
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: #666;
+    }
+    .axis-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: #f0f0f0;
+    }
+    .axis-line.y-25 {
+      bottom: 25%;
+    }
+    .axis-line.y-50 {
+      bottom: 50%;
+    }
+    .axis-line.y-75 {
+      bottom: 75%;
+    }
+    .axis-label {
+      position: absolute;
+      left: -40px;
+      font-size: 12px;
+      color: #999;
+    }
+    .axis-label.y-0 {
+      bottom: 0;
+    }
+    .axis-label.y-25 {
+      bottom: 25%;
+    }
+    .axis-label.y-50 {
+      bottom: 50%;
+    }
+    .axis-label.y-75 {
+      bottom: 75%;
+    }
+    .x-labels {
+      display: flex;
+      margin-top: 10px;
+    }
+    .x-label {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+    }
+    
+    /* 环形图表 */
+    .pie-chart {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .pie-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .pie-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #1890ff 0% 25%, 
+        #52c41a 25% 55%, 
+        #fa8c16 55% 80%, 
+        #f5222d 80% 100%
+      );
+      position: relative;
+    }
+    .pie-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .pie-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .pie-label {
+      font-size: 12px;
+      color: #999;
+    }
+    .pie-legend {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+    
+    /* 排行榜卡片 */
+    .rank-list {
+      margin-top: 15px;
+    }
+    .rank-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .rank-item:last-child {
+      border-bottom: none;
+    }
+    .rank-index {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 12px;
+      margin-right: 15px;
+    }
+    .rank-index-1, .rank-index-2, .rank-index-3 {
+      color: white;
+    }
+    .rank-index-1 {
+      background-color: #f5222d;
+    }
+    .rank-index-2 {
+      background-color: #fa8c16;
+    }
+    .rank-index-3 {
+      background-color: #faad14;
+    }
+    .rank-index-other {
+      background-color: #f0f0f0;
+      color: #999;
+    }
+    .rank-content {
+      flex: 1;
+    }
+    .rank-title {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .rank-data {
+      font-size: 12px;
+      color: #999;
+      display: flex;
+      gap: 10px;
+    }
+    .rank-value {
+      color: #1890ff;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    
+    /* 数据表格 */
+    .data-table {
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      margin-bottom: 20px;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table th, .table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .table th {
+      background-color: #fafafa;
+      font-weight: 500;
+      color: #606266;
+    }
+    .table tr:hover td {
+      background-color: #f5f7fa;
+    }
+    .trend-chart {
+      height: 30px;
+      width: 100px;
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .trend-bar {
+      flex: 1;
+      background-color: #e6f7ff;
+      border-radius: 1px;
+    }
+    
+    /* 选项卡切换样式 */
+    .tabs {
+      display: flex;
+      background-color: white;
+      border-bottom: 1px solid #e8e8e8;
+      margin-bottom: 20px;
+      border-radius: 8px 8px 0 0;
+      overflow: hidden;
+    }
+    .tab {
+      padding: 15px 25px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab.active {
+      color: #1890ff;
+      border-bottom-color: #1890ff;
+      background-color: #e6f7ff;
+    }
+    .tab:hover:not(.active) {
+      background-color: #f5f7fa;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-users-gear"></i>
+        <div class="logo">会员管理系统</div>
+      </div>
+      <div class="menu">
+        <div class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          <span>控制台</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-users"></i>
+          <span>会员管理</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-shopping-bag"></i>
+          <span>商品管理</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-bullhorn"></i>
+          <span>营销活动</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-shopping-cart"></i>
+          <span>订单管理</span>
+        </div>
+        <div class="menu-item active">
+          <i class="fas fa-chart-pie"></i>
+          <span>数据分析</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-trash-can"></i>
+          <span>回收站</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-gear"></i>
+          <span>系统设置</span>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div>管理员</div>
+        </div>
+        <i class="fas fa-sign-out-alt" style="cursor: pointer;"></i>
+      </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+      <!-- 页头区域 -->
+      <div class="header">
+        <div class="breadcrumb">
+          <a style="color: #1890ff;">首页</a>
+          <span><i class="fas fa-chevron-right" style="font-size: 12px;"></i></span>
+          <a style="color: #1890ff;">数据分析</a>
+          <span><i class="fas fa-chevron-right" style="font-size: 12px;"></i></span>
+          <a>数据概览</a>
+        </div>
+        <div class="header-right">
+          <div class="header-action">
+            <i class="fas fa-bell"></i>
+            <div class="notification-badge">3</div>
+          </div>
+          <div class="header-action">
+            <i class="fas fa-message"></i>
+            <div class="notification-badge">5</div>
+          </div>
+          <div class="header-action">
+            <i class="fas fa-expand"></i>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 内容区域 -->
+      <div class="content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <i class="fas fa-chart-pie fa-lg"></i> 数据统计分析
+        </div>
+        
+        <!-- 选项卡切换 -->
+        <div class="tabs">
+          <div class="tab active">
+            <i class="fas fa-home"></i> 数据概览
+          </div>
+          <div class="tab">
+            <i class="fas fa-users"></i> 会员分析
+          </div>
+          <div class="tab">
+            <i class="fas fa-shopping-cart"></i> 销售分析
+          </div>
+          <div class="tab">
+            <i class="fas fa-chart-bar"></i> 商品分析
+          </div>
+          <div class="tab">
+            <i class="fas fa-bullhorn"></i> 营销效果
+          </div>
+        </div>
+        
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #e6f7ff; color: #1890ff;">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">1,286</div>
+              <div class="stat-title">会员总数</div>
+              <div class="stat-trend trend-up">
+                <i class="fas fa-arrow-up"></i> 12.5% 较上月
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #f6ffed; color: #52c41a;">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">¥89,562</div>
+              <div class="stat-title">本月销售额</div>
+              <div class="stat-trend trend-up">
+                <i class="fas fa-arrow-up"></i> 23.8% 较上月
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #fff7e6; color: #fa8c16;">
+              <i class="fas fa-boxes"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">342</div>
+              <div class="stat-title">已售商品数</div>
+              <div class="stat-trend trend-up">
+                <i class="fas fa-arrow-up"></i> 6.2% 较上月
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #fff2f0; color: #f5222d;">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">86</div>
+              <div class="stat-title">本月新增会员</div>
+              <div class="stat-trend trend-down">
+                <i class="fas fa-arrow-down"></i> 3.1% 较上月
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 图表行 -->
+        <div class="chart-row">
+          <!-- 左侧销售额图表 -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">
+                <i class="fas fa-chart-column"></i> 销售额趋势
+              </div>
+              <div class="chart-filters">
+                <div class="chart-filter">今日</div>
+                <div class="chart-filter">本周</div>
+                <div class="chart-filter active">本月</div>
+                <div class="chart-filter">全年</div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <div class="sales-chart">
+                <div class="axis-label y-0">0</div>
+                <div class="axis-label y-25">25K</div>
+                <div class="axis-label y-50">50K</div>
+                <div class="axis-label y-75">75K</div>
+                
+                <div class="axis-line y-25"></div>
+                <div class="axis-line y-50"></div>
+                <div class="axis-line y-75"></div>
+                
+                <div class="chart-column" style="height: 60%;" data-value="¥42,350"></div>
+                <div class="chart-column" style="height: 40%;" data-value="¥28,420"></div>
+                <div class="chart-column" style="height: 75%;" data-value="¥53,280"></div>
+                <div class="chart-column" style="height: 55%;" data-value="¥38,920"></div>
+                <div class="chart-column" style="height: 80%;" data-value="¥56,780"></div>
+                <div class="chart-column" style="height: 65%;" data-value="¥46,120"></div>
+                <div class="chart-column" style="height: 90%;" data-value="¥63,540"></div>
+                <div class="chart-column" style="height: 85%;" data-value="¥59,870"></div>
+                <div class="chart-column" style="height: 70%;" data-value="¥49,320"></div>
+                <div class="chart-column" style="height: 95%;" data-value="¥67,290"></div>
+                <div class="chart-column" style="height: 100%;" data-value="¥71,340"></div>
+                <div class="chart-column" style="height: 90%;" data-value="¥63,950"></div>
+              </div>
+              <div class="x-labels">
+                <div class="x-label">1月</div>
+                <div class="x-label">2月</div>
+                <div class="x-label">3月</div>
+                <div class="x-label">4月</div>
+                <div class="x-label">5月</div>
+                <div class="x-label">6月</div>
+                <div class="x-label">7月</div>
+                <div class="x-label">8月</div>
+                <div class="x-label">9月</div>
+                <div class="x-label">10月</div>
+                <div class="x-label">11月</div>
+                <div class="x-label">12月</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 右侧环形图 -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">
+                <i class="fas fa-chart-pie"></i> 会员等级分布
+              </div>
+            </div>
+            <div class="chart-container">
+              <div class="pie-chart">
+                <div class="pie-container">
+                  <div class="pie-circle"></div>
+                  <div class="pie-center">
+                    <div class="pie-value">1,286</div>
+                    <div class="pie-label">会员总数</div>
+                  </div>
+                </div>
+                <div class="pie-legend">
+                  <div class="legend-item">
+                    <div class="legend-color" style="background-color: #1890ff;"></div>
+                    <div>普通会员 (325)</div>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color" style="background-color: #52c41a;"></div>
+                    <div>银卡会员 (386)</div>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color" style="background-color: #fa8c16;"></div>
+                    <div>金卡会员 (315)</div>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f5222d;"></div>
+                    <div>钻石会员 (260)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 热销商品排行 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">
+              <i class="fas fa-crown"></i> 热销商品排行榜
+            </div>
+            <div class="chart-filters">
+              <div class="chart-filter">按销量</div>
+              <div class="chart-filter active">按销售额</div>
+              <div class="chart-filter">按利润</div>
+            </div>
+          </div>
+          <div class="rank-list">
+            <div class="rank-item">
+              <div class="rank-index rank-index-1">1</div>
+              <div class="rank-content">
+                <div class="rank-title">高级会员专享礼盒</div>
+                <div class="rank-data">
+                  <span>销量: 246件</span>
+                  <span>好评率: 98%</span>
+                </div>
+              </div>
+              <div class="rank-value">¥70,848</div>
+            </div>
+            <div class="rank-item">
+              <div class="rank-index rank-index-2">2</div>
+              <div class="rank-content">
+                <div class="rank-title">精选进口坚果礼盒</div>
+                <div class="rank-data">
+                  <span>销量: 389件</span>
+                  <span>好评率: 96%</span>
+                </div>
+              </div>
+              <div class="rank-value">¥61,462</div>
+            </div>
+            <div class="rank-item">
+              <div class="rank-index rank-index-3">3</div>
+              <div class="rank-content">
+                <div class="rank-title">会员定制保温杯</div>
+                <div class="rank-data">
+                  <span>销量: 127件</span>
+                  <span>好评率: 97%</span>
+                </div>
+              </div>
+              <div class="rank-value">¥32,573</div>
+            </div>
+            <div class="rank-item">
+              <div class="rank-index rank-index-other">4</div>
+              <div class="rank-content">
+                <div class="rank-title">有机山茶油 500ml</div>
+                <div class="rank-data">
+                  <span>销量: 243件</span>
+                  <span>好评率: 95%</span>
+                </div>
+              </div>
+              <div class="rank-value">¥28,224</div>
+            </div>
+            <div class="rank-item">
+              <div class="rank-index rank-index-other">5</div>
+              <div class="rank-content">
+                <div class="rank-title">会员专享按摩体验券</div>
+                <div class="rank-data">
+                  <span>销量: 85件</span>
+                  <span>好评率: 99%</span>
+                </div>
+              </div>
+              <div class="rank-value">¥16,830</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 数据表格 -->
+        <div class="data-table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>会员级别</th>
+                <th>人数</th>
+                <th>消费金额</th>
+                <th>平均客单价</th>
+                <th>订单转化率</th>
+                <th>消费趋势</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>钻石会员</td>
+                <td>260</td>
+                <td>¥156,240</td>
+                <td>¥1,286</td>
+                <td>68%</td>
+                <td>
+                  <div class="trend-chart">
+                    <div class="trend-bar" style="height: 60%;"></div>
+                    <div class="trend-bar" style="height: 70%;"></div>
+                    <div class="trend-bar" style="height: 65%;"></div>
+                    <div class="trend-bar" style="height: 80%;"></div>
+                    <div class="trend-bar" style="height: 75%;"></div>
+                    <div class="trend-bar" style="height: 90%;"></div>
+                    <div class="trend-bar" style="height: 100%;"></div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>金卡会员</td>
+                <td>315</td>
+                <td>¥128,730</td>
+                <td>¥842</td>
+                <td>57%</td>
+                <td>
+                  <div class="trend-chart">
+                    <div class="trend-bar" style="height: 50%;"></div>
+                    <div class="trend-bar" style="height: 55%;"></div>
+                    <div class="trend-bar" style="height: 60%;"></div>
+                    <div class="trend-bar" style="height: 70%;"></div>
+                    <div class="trend-bar" style="height: 65%;"></div>
+                    <div class="trend-bar" style="height: 80%;"></div>
+                    <div class="trend-bar" style="height: 85%;"></div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>银卡会员</td>
+                <td>386</td>
+                <td>¥92,640</td>
+                <td>¥562</td>
+                <td>42%</td>
+                <td>
+                  <div class="trend-chart">
+                    <div class="trend-bar" style="height: 40%;"></div>
+                    <div class="trend-bar" style="height: 45%;"></div>
+                    <div class="trend-bar" style="height: 50%;"></div>
+                    <div class="trend-bar" style="height: 60%;"></div>
+                    <div class="trend-bar" style="height: 55%;"></div>
+                    <div class="trend-bar" style="height: 65%;"></div>
+                    <div class="trend-bar" style="height: 70%;"></div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>普通会员</td>
+                <td>325</td>
+                <td>¥45,500</td>
+                <td>¥328</td>
+                <td>35%</td>
+                <td>
+                  <div class="trend-chart">
+                    <div class="trend-bar" style="height: 30%;"></div>
+                    <div class="trend-bar" style="height: 40%;"></div>
+                    <div class="trend-bar" style="height: 35%;"></div>
+                    <div class="trend-bar" style="height: 45%;"></div>
+                    <div class="trend-bar" style="height: 40%;"></div>
+                    <div class="trend-bar" style="height: 50%;"></div>
+                    <div class="trend-bar" style="height: 55%;"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 

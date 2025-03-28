@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会员管理系统 - 会员管理</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 220px;
+      background-color: #001529;
+      color: #fff;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .sidebar-header {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid #002140;
+    }
+    .sidebar-header h1 {
+      font-size: 18px;
+      color: #fff;
+    }
+    .sidebar-menu {
+      padding: 10px 0;
+    }
+    .menu-item {
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .menu-item.active {
+      background-color: #1890ff;
+    }
+    .menu-item:hover {
+      background-color: #002140;
+    }
+    .menu-item i {
+      margin-right: 10px;
+      width: 16px;
+      height: 16px;
+      background-color: rgba(255, 255, 255, 0.65);
+      border-radius: 2px;
+    }
+    .main-content {
+      flex: 1;
+      margin-left: 220px;
+    }
+    .header {
+      height: 60px;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 1px 4px rgba(0,21,41,.08);
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+    }
+    .user-info {
+      margin-left: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #1890ff;
+      margin-right: 10px;
+    }
+    .content {
+      padding: 20px;
+    }
+    .toolbar {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 4px;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .search-area {
+      display: flex;
+      gap: 10px;
+    }
+    .search-input {
+      width: 300px;
+      height: 32px;
+      border: 1px solid #dcdfe6;
+      border-radius: 4px;
+      padding: 0 15px;
+      font-size: 14px;
+    }
+    .button {
+      height: 32px;
+      padding: 0 15px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .button-primary {
+      background-color: #1890ff;
+      color: #fff;
+    }
+    .button-default {
+      background-color: #f4f4f5;
+      color: #606266;
+      border: 1px solid #dcdfe6;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .filter-bar {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 4px;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filter-item label {
+      font-size: 14px;
+      color: #606266;
+    }
+    .filter-select {
+      height: 32px;
+      border: 1px solid #dcdfe6;
+      border-radius: 4px;
+      padding: 0 10px;
+      min-width: 120px;
+      font-size: 14px;
+    }
+    .card {
+      background-color: #fff;
+      border-radius: 4px;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+      margin-bottom: 20px;
+    }
+    .card-header {
+      padding: 15px;
+      border-bottom: 1px solid #ebeef5;
+      font-size: 16px;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-body {
+      padding: 20px;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table th, .table td {
+      padding: 12px 8px;
+      text-align: left;
+      border-bottom: 1px solid #ebeef5;
+    }
+    .table th {
+      font-weight: 500;
+      color: #606266;
+      background-color: #f5f7fa;
+    }
+    .action-link {
+      color: #1890ff;
+      text-decoration: none;
+      margin-right: 10px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 12px;
+      border-radius: 10px;
+      color: #fff;
+    }
+    .badge-success {
+      background-color: #67c23a;
+    }
+    .badge-warning {
+      background-color: #e6a23c;
+    }
+    .badge-danger {
+      background-color: #f56c6c;
+    }
+    .badge-info {
+      background-color: #909399;
+    }
+    .badge-primary {
+      background-color: #1890ff;
+    }
+    .pagination {
+      display: flex;
+      justify-content: flex-end;
+      padding: 20px 0;
+    }
+    .pagination-item {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+    .pagination-item.active {
+      background-color: #1890ff;
+      color: #fff;
+      border-color: #1890ff;
+    }
+    .tag {
+      display: inline-block;
+      height: 22px;
+      line-height: 22px;
+      padding: 0 8px;
+      border-radius: 4px;
+      background-color: #ecf5ff;
+      color: #409eff;
+      font-size: 12px;
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h1>会员管理系统</h1>
+      </div>
+      <div class="sidebar-menu">
+        <div class="menu-item">
+          <i></i>
+          <span>控制台</span>
+        </div>
+        <div class="menu-item active">
+          <i></i>
+          <span>会员管理</span>
+        </div>
+        <div class="menu-item">
+          <i></i>
+          <span>商品管理</span>
+        </div>
+        <div class="menu-item">
+          <i></i>
+          <span>订单管理</span>
+        </div>
+        <div class="menu-item">
+          <i></i>
+          <span>营销活动</span>
+        </div>
+        <div class="menu-item">
+          <i></i>
+          <span>数据统计</span>
+        </div>
+        <div class="menu-item">
+          <i></i>
+          <span>回收站</span>
+        </div>
+        <div class="menu-item">
+          <i></i>
+          <span>系统设置</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+      <div class="header">
+        <div class="header-left">
+          <span>会员管理</span>
+        </div>
+        <div class="header-right">
+          <div>
+            <i></i> <!-- 通知图标 -->
+          </div>
+          <div class="user-info">
+            <div class="user-avatar"></div>
+            <span>管理员</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="content">
+        <!-- 工具栏 -->
+        <div class="toolbar">
+          <div class="search-area">
+            <input type="text" class="search-input" placeholder="搜索会员姓名/手机号/卡号">
+            <button class="button button-primary">搜索</button>
+          </div>
+          <div class="action-buttons">
+            <button class="button button-primary">新增会员</button>
+            <button class="button button-default">批量导入</button>
+            <button class="button button-default">导出数据</button>
+          </div>
+        </div>
+        
+        <!-- 筛选栏 -->
+        <div class="filter-bar">
+          <div class="filter-item">
+            <label>会员等级:</label>
+            <select class="filter-select">
+              <option value="">全部</option>
+              <option value="普通会员">普通会员</option>
+              <option value="银卡会员">银卡会员</option>
+              <option value="金卡会员">金卡会员</option>
+              <option value="钻石会员">钻石会员</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label>注册时间:</label>
+            <select class="filter-select">
+              <option value="">全部</option>
+              <option value="today">今日</option>
+              <option value="week">本周</option>
+              <option value="month">本月</option>
+              <option value="quarter">本季度</option>
+              <option value="year">本年度</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label>状态:</label>
+            <select class="filter-select">
+              <option value="">全部</option>
+              <option value="1">正常</option>
+              <option value="0">停用</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label>标签:</label>
+            <select class="filter-select">
+              <option value="">全部</option>
+              <option value="高消费">高消费</option>
+              <option value="新客户">新客户</option>
+              <option value="活跃">活跃会员</option>
+              <option value="休眠">休眠会员</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- 会员列表 -->
+        <div class="card">
+          <div class="card-header">
+            <span>会员列表</span>
+            <div>
+              <button class="button button-default">批量操作</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th width="40"><input type="checkbox"></th>
+                  <th>会员姓名</th>
+                  <th>会员卡号</th>
+                  <th>手机号码</th>
+                  <th>会员等级</th>
+                  <th>账户余额</th>
+                  <th>积分</th>
+                  <th>标签</th>
+                  <th>注册时间</th>
+                  <th>状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>张三</td>
+                  <td>VIP10001</td>
+                  <td>138****1234</td>
+                  <td>金卡会员</td>
+                  <td>2,530.00</td>
+                  <td>1,256</td>
+                  <td>
+                    <span class="tag">高消费</span>
+                    <span class="tag">活跃</span>
+                  </td>
+                  <td>2023-01-15</td>
+                  <td><span class="badge badge-success">正常</span></td>
+                  <td>
+                    <a href="#" class="action-link">详情</a>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">充值</a>
+                    <a href="#" class="action-link">扣费</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>李四</td>
+                  <td>VIP10002</td>
+                  <td>139****5678</td>
+                  <td>银卡会员</td>
+                  <td>860.00</td>
+                  <td>568</td>
+                  <td>
+                    <span class="tag">新客户</span>
+                  </td>
+                  <td>2023-05-23</td>
+                  <td><span class="badge badge-success">正常</span></td>
+                  <td>
+                    <a href="#" class="action-link">详情</a>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">充值</a>
+                    <a href="#" class="action-link">扣费</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>王五</td>
+                  <td>VIP10003</td>
+                  <td>136****9012</td>
+                  <td>钻石会员</td>
+                  <td>5,280.00</td>
+                  <td>3,125</td>
+                  <td>
+                    <span class="tag">高消费</span>
+                    <span class="tag">VIP</span>
+                  </td>
+                  <td>2022-12-05</td>
+                  <td><span class="badge badge-success">正常</span></td>
+                  <td>
+                    <a href="#" class="action-link">详情</a>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">充值</a>
+                    <a href="#" class="action-link">扣费</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>赵六</td>
+                  <td>VIP10004</td>
+                  <td>135****3456</td>
+                  <td>普通会员</td>
+                  <td>120.00</td>
+                  <td>85</td>
+                  <td>
+                    <span class="tag">休眠</span>
+                  </td>
+                  <td>2023-03-18</td>
+                  <td><span class="badge badge-warning">停用</span></td>
+                  <td>
+                    <a href="#" class="action-link">详情</a>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">充值</a>
+                    <a href="#" class="action-link">扣费</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>孙七</td>
+                  <td>VIP10005</td>
+                  <td>133****7890</td>
+                  <td>银卡会员</td>
+                  <td>960.00</td>
+                  <td>512</td>
+                  <td>
+                    <span class="tag">活跃</span>
+                  </td>
+                  <td>2023-04-27</td>
+                  <td><span class="badge badge-success">正常</span></td>
+                  <td>
+                    <a href="#" class="action-link">详情</a>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">充值</a>
+                    <a href="#" class="action-link">扣费</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>周八</td>
+                  <td>VIP10006</td>
+                  <td>137****2345</td>
+                  <td>金卡会员</td>
+                  <td>1,850.00</td>
+                  <td>975</td>
+                  <td>
+                    <span class="tag">活跃</span>
+                    <span class="tag">高消费</span>
+                  </td>
+                  <td>2023-02-12</td>
+                  <td><span class="badge badge-success">正常</span></td>
+                  <td>
+                    <a href="#" class="action-link">详情</a>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">充值</a>
+                    <a href="#" class="action-link">扣费</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>吴九</td>
+                  <td>VIP10007</td>
+                  <td>134****6789</td>
+                  <td>普通会员</td>
+                  <td>320.00</td>
+                  <td>156</td>
+                  <td>
+                    <span class="tag">新客户</span>
+                  </td>
+                  <td>2023-05-30</td>
+                  <td><span class="badge badge-success">正常</span></td>
+                  <td>
+                    <a href="#" class="action-link">详情</a>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">充值</a>
+                    <a href="#" class="action-link">扣费</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <!-- 分页 -->
+            <div class="pagination">
+              <div class="pagination-item">«</div>
+              <div class="pagination-item active">1</div>
+              <div class="pagination-item">2</div>
+              <div class="pagination-item">3</div>
+              <div class="pagination-item">...</div>
+              <div class="pagination-item">10</div>
+              <div class="pagination-item">»</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 

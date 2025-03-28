@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会员管理系统 - 商品管理</title>
+  <!-- 引入FontAwesome图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+    }
+    .app-container {
+      display: flex;
+      width: 100%;
+    }
+    
+    /* 侧边栏样式 */
+    .sidebar {
+      width: 220px;
+      background-color: #001529;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s;
+    }
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .menu {
+      padding: 10px 0;
+      flex-grow: 1;
+    }
+    .menu-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.65);
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+    .menu-item:hover {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+    .menu-item.active {
+      color: white;
+      background-color: #1890ff;
+      border-left-color: white;
+    }
+    .sidebar-footer {
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 30px;
+      height: 30px;
+      background-color: #1890ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+    }
+    
+    /* 主内容区样式 */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #f0f2f5;
+    }
+    .header {
+      background-color: white;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      padding: 0 20px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+    }
+    .breadcrumb span {
+      margin: 0 5px;
+      color: #999;
+    }
+    .header-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .header-action {
+      font-size: 16px;
+      color: #666;
+      cursor: pointer;
+      position: relative;
+    }
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: #f5222d;
+      color: white;
+      font-size: 12px;
+      border-radius: 10px;
+      padding: 0 5px;
+      min-width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* 内容区域样式 */
+    .content {
+      padding: 20px;
+      flex-grow: 1;
+    }
+    .page-title {
+      font-size: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .toolbar {
+      background-color: white;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    }
+    .search-box {
+      display: flex;
+      gap: 10px;
+      width: 50%;
+    }
+    .search-input {
+      flex-grow: 1;
+      padding: 8px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .search-input:focus {
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+    .search-button {
+      background-color: #1890ff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .search-button:hover {
+      background-color: #40a9ff;
+    }
+    .advanced-search {
+      color: #1890ff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .advanced-search:hover {
+      color: #40a9ff;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .action-btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+    }
+    .primary-btn {
+      background-color: #1890ff;
+      color: white;
+      border: none;
+    }
+    .primary-btn:hover {
+      background-color: #40a9ff;
+    }
+    .default-btn {
+      background-color: #f4f4f5;
+      color: #606266;
+      border: 1px solid #dcdfe6;
+    }
+    .default-btn:hover {
+      color: #40a9ff;
+      border-color: #40a9ff;
+    }
+    
+    /* 筛选条件区 */
+    .filter-bar {
+      background-color: white;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    }
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filter-label {
+      color: #606266;
+      font-size: 14px;
+    }
+    .filter-input, .filter-select {
+      padding: 6px 10px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      outline: none;
+      min-width: 120px;
+    }
+    .filter-input:focus, .filter-select:focus {
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+    
+    /* 数据表格样式 */
+    .data-table {
+      background-color: white;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table th, .table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .table th {
+      background-color: #fafafa;
+      font-weight: 500;
+      color: #606266;
+      white-space: nowrap;
+    }
+    .table td {
+      color: #606266;
+    }
+    .table tr:hover td {
+      background-color: #f5f7fa;
+    }
+    .table-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+    .status-active {
+      background-color: #f6ffed;
+      color: #52c41a;
+    }
+    .status-inactive {
+      background-color: #fff2f0;
+      color: #ff4d4f;
+    }
+    .status-low {
+      background-color: #fff7e6;
+      color: #fa8c16;
+    }
+    .row-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .row-action {
+      color: #1890ff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .row-action:hover {
+      color: #40a9ff;
+    }
+    
+    /* 分页控件样式 */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      border-top: 1px solid #e8e8e8;
+    }
+    .pages {
+      display: flex;
+      gap: 5px;
+    }
+    .page-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .page-item:hover {
+      border-color: #1890ff;
+      color: #1890ff;
+    }
+    .page-item.active {
+      background-color: #1890ff;
+      border-color: #1890ff;
+      color: white;
+    }
+    .page-size {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .page-size-select {
+      padding: 6px 10px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      outline: none;
+    }
+    
+    /* 商品信息样式 */
+    .product-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .product-image {
+      width: 60px;
+      height: 60px;
+      background-color: #f5f5f5;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .product-image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+    }
+    .product-detail {
+      flex: 1;
+    }
+    .product-name {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .product-id {
+      font-size: 12px;
+      color: #999;
+    }
+    
+    /* 价格和库存样式 */
+    .price {
+      color: #ff4d4f;
+      font-weight: 500;
+    }
+    .category-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      background-color: #e6f7ff;
+      color: #1890ff;
+    }
+    .stock-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .stock-quantity {
+      font-weight: 500;
+    }
+    .stock-status {
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    /* 选项卡样式 */
+    .tabs {
+      display: flex;
+      background-color: white;
+      border-bottom: 1px solid #e8e8e8;
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab.active {
+      color: #1890ff;
+      border-bottom-color: #1890ff;
+    }
+    .tab:hover:not(.active) {
+      color: #40a9ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-users-gear"></i>
+        <div class="logo">会员管理系统</div>
+      </div>
+      <div class="menu">
+        <div class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          <span>控制台</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-users"></i>
+          <span>会员管理</span>
+        </div>
+        <div class="menu-item active">
+          <i class="fas fa-shopping-bag"></i>
+          <span>商品管理</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-bullhorn"></i>
+          <span>营销活动</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-shopping-cart"></i>
+          <span>订单管理</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-chart-pie"></i>
+          <span>数据分析</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-trash-can"></i>
+          <span>回收站</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-gear"></i>
+          <span>系统设置</span>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div>管理员</div>
+        </div>
+        <i class="fas fa-sign-out-alt" style="cursor: pointer;"></i>
+      </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+      <!-- 页头区域 -->
+      <div class="header">
+        <div class="breadcrumb">
+          <a style="color: #1890ff;">首页</a>
+          <span><i class="fas fa-chevron-right" style="font-size: 12px;"></i></span>
+          <a style="color: #1890ff;">商品管理</a>
+          <span><i class="fas fa-chevron-right" style="font-size: 12px;"></i></span>
+          <a>商品列表</a>
+        </div>
+        <div class="header-right">
+          <div class="header-action">
+            <i class="fas fa-bell"></i>
+            <div class="notification-badge">3</div>
+          </div>
+          <div class="header-action">
+            <i class="fas fa-message"></i>
+            <div class="notification-badge">5</div>
+          </div>
+          <div class="header-action">
+            <i class="fas fa-expand"></i>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 内容区域 -->
+      <div class="content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <i class="fas fa-shopping-bag fa-lg"></i> 商品管理
+        </div>
+
+        <!-- 选项卡 -->
+        <div class="tabs">
+          <div class="tab active">
+            <i class="fas fa-list"></i> 商品列表
+          </div>
+          <div class="tab">
+            <i class="fas fa-tags"></i> 商品分类
+          </div>
+          <div class="tab">
+            <i class="fas fa-cubes"></i> 库存管理
+          </div>
+          <div class="tab">
+            <i class="fas fa-tag"></i> 价格管理
+          </div>
+        </div>
+        
+        <!-- 工具栏 -->
+        <div class="toolbar">
+          <div class="search-box">
+            <input type="text" placeholder="商品名称/条码/编号" class="search-input">
+            <button class="search-button">
+              <i class="fas fa-search"></i> 搜索
+            </button>
+            <div class="advanced-search">
+              <i class="fas fa-sliders"></i> 高级筛选
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="action-btn primary-btn">
+              <i class="fas fa-plus"></i> 添加商品
+            </button>
+            <button class="action-btn default-btn">
+              <i class="fas fa-upload"></i> 批量导入
+            </button>
+            <button class="action-btn default-btn">
+              <i class="fas fa-download"></i> 导出数据
+            </button>
+          </div>
+        </div>
+        
+        <!-- 筛选条件 -->
+        <div class="filter-bar">
+          <div class="filter-item">
+            <div class="filter-label"><i class="fas fa-tags"></i> 商品分类:</div>
+            <select class="filter-select">
+              <option value="">全部分类</option>
+              <option value="food">食品饮料</option>
+              <option value="beauty">美妆护肤</option>
+              <option value="digital">数码电子</option>
+              <option value="clothing">服装鞋帽</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <div class="filter-label"><i class="fas fa-tag"></i> 价格区间:</div>
+            <input type="number" placeholder="最低价" class="filter-input" style="width: 80px;">
+            <span>至</span>
+            <input type="number" placeholder="最高价" class="filter-input" style="width: 80px;">
+          </div>
+          <div class="filter-item">
+            <div class="filter-label"><i class="fas fa-toggle-on"></i> 商品状态:</div>
+            <select class="filter-select">
+              <option value="">全部</option>
+              <option value="active">上架中</option>
+              <option value="inactive">已下架</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- 数据表格 -->
+        <div class="data-table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">
+                  <input type="checkbox" class="table-checkbox">
+                </th>
+                <th>商品信息</th>
+                <th>分类</th>
+                <th>价格</th>
+                <th>库存</th>
+                <th>销量</th>
+                <th>更新时间</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <input type="checkbox" class="table-checkbox">
+                </td>
+                <td>
+                  <div class="product-info">
+                    <div class="product-image">
+                      <i class="fas fa-image" style="font-size: 24px; color: #ccc;"></i>
+                    </div>
+                    <div class="product-detail">
+                      <div class="product-name">高级会员专享礼盒</div>
+                      <div class="product-id">SKU: PRD001</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="category-tag">
+                    <i class="fas fa-gift"></i> 会员礼品
+                  </div>
+                </td>
+                <td class="price">¥288.00</td>
+                <td>
+                  <div class="stock-info">
+                    <div class="stock-quantity">125</div>
+                    <div class="stock-status" style="color: #52c41a;">充足</div>
+                  </div>
+                </td>
+                <td>246</td>
+                <td>2022-10-05</td>
+                <td>
+                  <div class="status-tag status-active">
+                    <i class="fas fa-check-circle"></i> 上架中
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <div class="row-action">
+                      <i class="fas fa-edit"></i> 编辑
+                    </div>
+                    <div class="row-action">
+                      <i class="fas fa-arrow-down"></i> 下架
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input type="checkbox" class="table-checkbox">
+                </td>
+                <td>
+                  <div class="product-info">
+                    <div class="product-image">
+                      <i class="fas fa-image" style="font-size: 24px; color: #ccc;"></i>
+                    </div>
+                    <div class="product-detail">
+                      <div class="product-name">精选进口坚果礼盒</div>
+                      <div class="product-id">SKU: PRD002</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="category-tag">
+                    <i class="fas fa-utensils"></i> 食品饮料
+                  </div>
+                </td>
+                <td class="price">¥158.00</td>
+                <td>
+                  <div class="stock-info">
+                    <div class="stock-quantity">18</div>
+                    <div class="stock-status" style="color: #fa8c16;">偏低</div>
+                  </div>
+                </td>
+                <td>389</td>
+                <td>2022-09-25</td>
+                <td>
+                  <div class="status-tag status-active">
+                    <i class="fas fa-check-circle"></i> 上架中
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <div class="row-action">
+                      <i class="fas fa-edit"></i> 编辑
+                    </div>
+                    <div class="row-action">
+                      <i class="fas fa-arrow-down"></i> 下架
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input type="checkbox" class="table-checkbox">
+                </td>
+                <td>
+                  <div class="product-info">
+                    <div class="product-image">
+                      <i class="fas fa-image" style="font-size: 24px; color: #ccc;"></i>
+                    </div>
+                    <div class="product-detail">
+                      <div class="product-name">会员定制保温杯</div>
+                      <div class="product-id">SKU: PRD003</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="category-tag">
+                    <i class="fas fa-home"></i> 日用百货
+                  </div>
+                </td>
+                <td class="price">¥99.00</td>
+                <td>
+                  <div class="stock-info">
+                    <div class="stock-quantity">208</div>
+                    <div class="stock-status" style="color: #52c41a;">充足</div>
+                  </div>
+                </td>
+                <td>127</td>
+                <td>2022-10-10</td>
+                <td>
+                  <div class="status-tag status-active">
+                    <i class="fas fa-check-circle"></i> 上架中
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <div class="row-action">
+                      <i class="fas fa-edit"></i> 编辑
+                    </div>
+                    <div class="row-action">
+                      <i class="fas fa-arrow-down"></i> 下架
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input type="checkbox" class="table-checkbox">
+                </td>
+                <td>
+                  <div class="product-info">
+                    <div class="product-image">
+                      <i class="fas fa-image" style="font-size: 24px; color: #ccc;"></i>
+                    </div>
+                    <div class="product-detail">
+                      <div class="product-name">有机山茶油 500ml</div>
+                      <div class="product-id">SKU: PRD004</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="category-tag">
+                    <i class="fas fa-utensils"></i> 食品饮料
+                  </div>
+                </td>
+                <td class="price">¥168.00</td>
+                <td>
+                  <div class="stock-info">
+                    <div class="stock-quantity">0</div>
+                    <div class="stock-status" style="color: #ff4d4f;">缺货</div>
+                  </div>
+                </td>
+                <td>243</td>
+                <td>2022-09-15</td>
+                <td>
+                  <div class="status-tag status-inactive">
+                    <i class="fas fa-times-circle"></i> 已下架
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <div class="row-action">
+                      <i class="fas fa-edit"></i> 编辑
+                    </div>
+                    <div class="row-action">
+                      <i class="fas fa-arrow-up"></i> 上架
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input type="checkbox" class="table-checkbox">
+                </td>
+                <td>
+                  <div class="product-info">
+                    <div class="product-image">
+                      <i class="fas fa-image" style="font-size: 24px; color: #ccc;"></i>
+                    </div>
+                    <div class="product-detail">
+                      <div class="product-name">会员专享按摩体验券</div>
+                      <div class="product-id">SKU: PRD005</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="category-tag">
+                    <i class="fas fa-ticket-alt"></i> 服务券
+                  </div>
+                </td>
+                <td class="price">¥198.00</td>
+                <td>
+                  <div class="stock-info">
+                    <div class="stock-quantity">无限</div>
+                    <div class="stock-status" style="color: #1890ff;">电子券</div>
+                  </div>
+                </td>
+                <td>85</td>
+                <td>2022-10-08</td>
+                <td>
+                  <div class="status-tag status-active">
+                    <i class="fas fa-check-circle"></i> 上架中
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <div class="row-action">
+                      <i class="fas fa-edit"></i> 编辑
+                    </div>
+                    <div class="row-action">
+                      <i class="fas fa-arrow-down"></i> 下架
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- 分页部分 -->
+          <div class="pagination">
+            <div>已选择 0 项</div>
+            <div class="pages">
+              <div class="page-item">
+                <i class="fas fa-angle-left"></i>
+              </div>
+              <div class="page-item active">1</div>
+              <div class="page-item">2</div>
+              <div class="page-item">3</div>
+              <div class="page-item">
+                <i class="fas fa-ellipsis-h"></i>
+              </div>
+              <div class="page-item">10</div>
+              <div class="page-item">
+                <i class="fas fa-angle-right"></i>
+              </div>
+            </div>
+            <div class="page-size">
+              <span>每页显示</span>
+              <select class="page-size-select">
+                <option>10条</option>
+                <option>20条</option>
+                <option>50条</option>
+                <option>100条</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 

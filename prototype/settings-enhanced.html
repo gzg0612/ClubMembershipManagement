@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会员管理系统 - 系统设置</title>
+  <!-- 引入FontAwesome图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+    }
+    .app-container {
+      display: flex;
+      width: 100%;
+    }
+    
+    /* 侧边栏样式 */
+    .sidebar {
+      width: 220px;
+      background-color: #001529;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s;
+    }
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .menu {
+      padding: 10px 0;
+      flex-grow: 1;
+    }
+    .menu-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.65);
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+    .menu-item:hover {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+    .menu-item.active {
+      color: white;
+      background-color: #1890ff;
+      border-left-color: white;
+    }
+    .sidebar-footer {
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 30px;
+      height: 30px;
+      background-color: #1890ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+    }
+    
+    /* 主内容区样式 */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #f0f2f5;
+    }
+    .header {
+      background-color: white;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      padding: 0 20px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+    }
+    .breadcrumb span {
+      margin: 0 5px;
+      color: #999;
+    }
+    .header-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .header-action {
+      font-size: 16px;
+      color: #666;
+      cursor: pointer;
+      position: relative;
+    }
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: #f5222d;
+      color: white;
+      font-size: 12px;
+      border-radius: 10px;
+      padding: 0 5px;
+      min-width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* 内容区域样式 */
+    .content {
+      padding: 20px;
+      flex-grow: 1;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    /* 设置页面布局 */
+    .settings-layout {
+      display: flex;
+      gap: 20px;
+    }
+    .settings-menu {
+      width: 220px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      padding: 15px 0;
+    }
+    .settings-content {
+      flex: 1;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      padding: 20px;
+    }
+    
+    /* 设置菜单样式 */
+    .settings-nav-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+    .settings-nav-item:hover {
+      color: #1890ff;
+      background-color: #e6f7ff;
+    }
+    .settings-nav-item.active {
+      color: #1890ff;
+      background-color: #e6f7ff;
+      border-left-color: #1890ff;
+    }
+    
+    /* 设置表单样式 */
+    .settings-section {
+      margin-bottom: 30px;
+    }
+    .settings-section-title {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .form-help {
+      font-size: 12px;
+      color: #999;
+      margin-top: 5px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+    .form-select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+    .form-select:focus {
+      outline: none;
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #f0f0f0;
+      gap: 10px;
+    }
+    
+    /* 按钮样式 */
+    .btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      border: none;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background-color: #1890ff;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #40a9ff;
+    }
+    .btn-default {
+      background-color: white;
+      color: #666;
+      border: 1px solid #d9d9d9;
+    }
+    .btn-default:hover {
+      color: #40a9ff;
+      border-color: #40a9ff;
+    }
+    .btn-danger {
+      background-color: #ff4d4f;
+      color: white;
+    }
+    .btn-danger:hover {
+      background-color: #ff7875;
+    }
+    
+    /* 开关样式 */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #1890ff;
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    
+    /* 表格样式 */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table th, .table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .table th {
+      background-color: #fafafa;
+      font-weight: 500;
+      color: #606266;
+    }
+    .table tr:hover td {
+      background-color: #f5f7fa;
+    }
+    
+    /* 上传区域样式 */
+    .upload-area {
+      border: 2px dashed #d9d9d9;
+      border-radius: 8px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .upload-area:hover {
+      border-color: #40a9ff;
+    }
+    .upload-icon {
+      font-size: 32px;
+      color: #999;
+      margin-bottom: 10px;
+    }
+    .upload-text {
+      color: #666;
+    }
+    
+    /* 卡片样式 */
+    .card {
+      border-radius: 8px;
+      border: 1px solid #f0f0f0;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .card-title {
+      font-weight: 500;
+    }
+    
+    /* 标签样式 */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-right: 5px;
+    }
+    .tag-success {
+      background-color: #f6ffed;
+      color: #52c41a;
+      border: 1px solid #b7eb8f;
+    }
+    .tag-warning {
+      background-color: #fff7e6;
+      color: #fa8c16;
+      border: 1px solid #ffd591;
+    }
+    .tag-error {
+      background-color: #fff2f0;
+      color: #f5222d;
+      border: 1px solid #ffccc7;
+    }
+    
+    /* 颜色选择器 */
+    .color-picker {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .color-option {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .color-option.active {
+      border-color: #1890ff;
+    }
+    
+    /* 权限表格样式 */
+    .permission-table {
+      margin-top: 15px;
+    }
+    .permission-group {
+      border-bottom: 1px solid #f0f0f0;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+    .permission-group-title {
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    .permission-item {
+      display: flex;
+      margin-left: 20px;
+      margin-bottom: 10px;
+    }
+    .permission-name {
+      flex: 1;
+    }
+    .permission-checkbox {
+      margin-right: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-users-gear"></i>
+        <div class="logo">会员管理系统</div>
+      </div>
+      <div class="menu">
+        <div class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          <span>控制台</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-users"></i>
+          <span>会员管理</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-shopping-bag"></i>
+          <span>商品管理</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-bullhorn"></i>
+          <span>营销活动</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-shopping-cart"></i>
+          <span>订单管理</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-chart-pie"></i>
+          <span>数据分析</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-trash-can"></i>
+          <span>回收站</span>
+        </div>
+        <div class="menu-item active">
+          <i class="fas fa-gear"></i>
+          <span>系统设置</span>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div>管理员</div>
+        </div>
+        <i class="fas fa-sign-out-alt" style="cursor: pointer;"></i>
+      </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+      <!-- 页头区域 -->
+      <div class="header">
+        <div class="breadcrumb">
+          <a style="color: #1890ff;">首页</a>
+          <span><i class="fas fa-chevron-right" style="font-size: 12px;"></i></span>
+          <a>系统设置</a>
+        </div>
+        <div class="header-right">
+          <div class="header-action">
+            <i class="fas fa-bell"></i>
+            <div class="notification-badge">3</div>
+          </div>
+          <div class="header-action">
+            <i class="fas fa-message"></i>
+            <div class="notification-badge">5</div>
+          </div>
+          <div class="header-action">
+            <i class="fas fa-expand"></i>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 内容区域 -->
+      <div class="content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <i class="fas fa-gear fa-lg"></i> 系统设置
+        </div>
+        
+        <!-- 设置布局 -->
+        <div class="settings-layout">
+          <!-- 设置菜单 -->
+          <div class="settings-menu">
+            <div class="settings-nav-item active">
+              <i class="fas fa-sliders"></i> 基本设置
+            </div>
+            <div class="settings-nav-item">
+              <i class="fas fa-palette"></i> 界面设置
+            </div>
+            <div class="settings-nav-item">
+              <i class="fas fa-shield-alt"></i> 安全设置
+            </div>
+            <div class="settings-nav-item">
+              <i class="fas fa-users-cog"></i> 用户权限
+            </div>
+            <div class="settings-nav-item">
+              <i class="fas fa-envelope"></i> 邮件通知
+            </div>
+            <div class="settings-nav-item">
+              <i class="fas fa-database"></i> 数据维护
+            </div>
+            <div class="settings-nav-item">
+              <i class="fas fa-file-alt"></i> 系统日志
+            </div>
+            <div class="settings-nav-item">
+              <i class="fas fa-key"></i> 密钥管理
+            </div>
+            <div class="settings-nav-item">
+              <i class="fas fa-code"></i> 集成管理
+            </div>
+          </div>
+          
+          <!-- 设置内容 -->
+          <div class="settings-content">
+            <div class="settings-section">
+              <div class="settings-section-title">
+                <i class="fas fa-building"></i> 公司信息
+              </div>
+              <div class="form-group">
+                <label class="form-label">系统名称</label>
+                <input type="text" class="form-input" value="会员管理系统">
+                <div class="form-help">显示在浏览器标签页和系统登录页面的名称</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">公司名称</label>
+                <input type="text" class="form-input" value="XXX科技有限公司">
+              </div>
+              <div class="form-group">
+                <label class="form-label">公司Logo</label>
+                <div class="upload-area">
+                  <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                  </div>
+                  <div class="upload-text">点击或拖拽文件到此处上传</div>
+                </div>
+                <div class="form-help">建议尺寸: 200px × 200px，支持PNG、JPG格式</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">系统描述</label>
+                <textarea class="form-input" rows="3">专业的会员管理系统，帮助企业高效管理会员资料和消费记录，提升会员服务体验。</textarea>
+              </div>
+            </div>
+            
+            <div class="settings-section">
+              <div class="settings-section-title">
+                <i class="fas fa-globe"></i> 区域设置
+              </div>
+              <div class="form-group">
+                <label class="form-label">系统语言</label>
+                <select class="form-select">
+                  <option selected>简体中文</option>
+                  <option>English</option>
+                  <option>日本語</option>
+                  <option>한국어</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">时区设置</label>
+                <select class="form-select">
+                  <option selected>(UTC+08:00) 北京，香港，上海</option>
+                  <option>(UTC+00:00) 协调世界时</option>
+                  <option>(UTC-08:00) 太平洋时间(美国和加拿大)</option>
+                  <option>(UTC+09:00) 大阪，札幌，东京</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">日期格式</label>
+                <select class="form-select">
+                  <option selected>YYYY-MM-DD</option>
+                  <option>DD/MM/YYYY</option>
+                  <option>MM/DD/YYYY</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">时间格式</label>
+                <select class="form-select">
+                  <option selected>24小时制 (HH:mm:ss)</option>
+                  <option>12小时制 (hh:mm:ss a)</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="settings-section">
+              <div class="settings-section-title">
+                <i class="fas fa-wrench"></i> 功能开关
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">会员自助注册</div>
+                  <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="form-help">允许访客自行注册成为会员</div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">会员积分功能</div>
+                  <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="form-help">开启后会员可以通过消费获得积分并兑换礼品</div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">自动发送生日祝福</div>
+                  <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="form-help">会员生日当天自动发送祝福短信或邮件</div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">数据自动备份</div>
+                  <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="form-help">每天凌晨自动备份数据库</div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">操作日志记录</div>
+                  <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="form-help">记录管理员的所有操作以便追踪</div>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button class="btn btn-default">
+                <i class="fas fa-undo"></i> 重置
+              </button>
+              <button class="btn btn-primary">
+                <i class="fas fa-save"></i> 保存设置
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 

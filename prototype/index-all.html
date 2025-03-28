@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会员管理系统 - 原型预览</title>
+  <!-- 引入FontAwesome图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+    .container {
+      padding: 20px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .header {
+      background-color: #001529;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header h1 {
+      font-size: 24px;
+    }
+    .header-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .header-button {
+      background-color: #1890ff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header-button:hover {
+      background-color: #40a9ff;
+    }
+    .tabs {
+      display: flex;
+      background-color: white;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    }
+    .tab {
+      padding: 15px 25px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab.active {
+      color: #1890ff;
+      border-bottom-color: #1890ff;
+      background-color: #e6f7ff;
+    }
+    .tab:hover:not(.active) {
+      background-color: #f5f7fa;
+    }
+    .content {
+      display: none;
+    }
+    .content.active {
+      display: block;
+    }
+    .prototype-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    }
+    .prototype-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .prototype-title {
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .prototype-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .action-button {
+      background-color: #f4f4f5;
+      color: #606266;
+      border: 1px solid #dcdfe6;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .action-button.primary {
+      background-color: #1890ff;
+      color: white;
+      border-color: #1890ff;
+    }
+    .action-button:hover {
+      opacity: 0.8;
+    }
+    .preview-frame {
+      width: 100%;
+      height: 700px;
+      border: 1px solid #dcdfe6;
+      border-radius: 4px;
+    }
+    .grid-view {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .preview-card {
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    }
+    .preview-card-header {
+      padding: 15px;
+      background-color: #f5f7fa;
+      font-weight: bold;
+      border-bottom: 1px solid #ebeef5;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .preview-card-body {
+      height: 300px;
+      overflow: hidden;
+      position: relative;
+    }
+    .preview-card-body iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+      transform: scale(0.5);
+      transform-origin: 0 0;
+    }
+    .preview-card-footer {
+      padding: 15px;
+      border-top: 1px solid #ebeef5;
+      display: flex;
+      justify-content: space-between;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 12px;
+      border-radius: 10px;
+      color: #fff;
+      background-color: #67c23a;
+    }
+    .view-button {
+      color: #1890ff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    /* 美化现有按钮和元素的样式 */
+    .fa-icon {
+      width: 16px;
+      height: 16px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+    /* 响应式调整 */
+    @media (max-width: 1200px) {
+      .grid-view {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 768px) {
+      .grid-view {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 页面标题和顶部操作区 -->
+    <div class="header">
+      <h1><i class="fas fa-layer-group"></i> 会员管理系统原型预览</h1>
+      <div class="header-right">
+        <button class="header-button">
+          <i class="fas fa-download"></i> 下载源码
+        </button>
+        <button class="header-button">
+          <i class="fas fa-code"></i> 查看代码
+        </button>
+      </div>
+    </div>
+    
+    <!-- 标签切换区 -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('tab-all')">
+        <i class="fas fa-th-large"></i> 所有原型
+      </div>
+      <div class="tab" onclick="switchTab('tab-login')">
+        <i class="fas fa-sign-in-alt"></i> 登录页面
+      </div>
+      <div class="tab" onclick="switchTab('tab-login-enhanced')">
+        <i class="fas fa-sign-in-alt"></i> 增强版登录页面
+      </div>
+      <div class="tab" onclick="switchTab('tab-dashboard')">
+        <i class="fas fa-chart-line"></i> 控制台仪表盘
+      </div>
+      <div class="tab" onclick="switchTab('tab-dashboard-enhanced')">
+        <i class="fas fa-chart-line"></i> 增强版仪表盘
+      </div>
+      <div class="tab" onclick="switchTab('tab-members')">
+        <i class="fas fa-users"></i> 会员管理
+      </div>
+      <div class="tab" onclick="switchTab('tab-members-enhanced')">
+        <i class="fas fa-users"></i> 增强版会员管理
+      </div>
+      <div class="tab" onclick="switchTab('tab-products')">
+        <i class="fas fa-shopping-bag"></i> 商品管理
+      </div>
+      <div class="tab" onclick="switchTab('tab-orders')">
+        <i class="fas fa-shopping-cart"></i> 订单管理
+      </div>
+      <div class="tab" onclick="switchTab('tab-marketing')">
+        <i class="fas fa-bullhorn"></i> 营销活动
+      </div>
+      <div class="tab" onclick="switchTab('tab-analytics')">
+        <i class="fas fa-chart-pie"></i> 数据分析
+      </div>
+      <div class="tab" onclick="switchTab('tab-trash')">
+        <i class="fas fa-trash-can"></i> 回收站
+      </div>
+      <div class="tab" onclick="switchTab('tab-settings')">
+        <i class="fas fa-gear"></i> 系统设置
+      </div>
+    </div>
+    
+    <!-- 所有原型的网格视图 -->
+    <div class="content active" id="tab-all">
+      <div class="grid-view">
+        <!-- 登录页面卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-sign-in-alt"></i> 登录页面
+          </div>
+          <div class="preview-card-body">
+            <iframe src="index.html" frameborder="0"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge">已完成</span>
+            <span class="view-button" onclick="switchTab('tab-login')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- 增强版登录页面卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-sign-in-alt"></i> 增强版登录页面
+          </div>
+          <div class="preview-card-body">
+            <iframe src="login-enhanced.html" frameborder="0"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge" style="background-color: #1890ff;">图标增强</span>
+            <span class="view-button" onclick="switchTab('tab-login-enhanced')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- 控制台仪表盘卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-chart-line"></i> 控制台仪表盘
+          </div>
+          <div class="preview-card-body">
+            <iframe src="dashboard.html" frameborder="0"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge">已完成</span>
+            <span class="view-button" onclick="switchTab('tab-dashboard')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- 增强版仪表盘卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-chart-line"></i> 增强版仪表盘
+          </div>
+          <div class="preview-card-body">
+            <iframe src="dashboard-enhanced.html" frameborder="0"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge" style="background-color: #1890ff;">图标增强</span>
+            <span class="view-button" onclick="switchTab('tab-dashboard-enhanced')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- 会员管理卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-users"></i> 会员管理
+          </div>
+          <div class="preview-card-body">
+            <iframe src="members.html" frameborder="0"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge">已完成</span>
+            <span class="view-button" onclick="switchTab('tab-members')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+
+        <!-- 增强版会员管理卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-users"></i> 增强版会员管理
+          </div>
+          <div class="preview-card-body">
+            <iframe src="members-enhanced.html" frameborder="0"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge" style="background-color: #1890ff;">图标增强</span>
+            <span class="view-button" onclick="switchTab('tab-members-enhanced')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- 商品管理卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-shopping-bag"></i> 商品管理
+          </div>
+          <div class="preview-card-body">
+            <iframe src="products-enhanced.html" frameborder="0"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge" style="background-color: #1890ff;">图标增强</span>
+            <span class="view-button" onclick="switchTab('tab-products')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- 订单管理卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-shopping-cart"></i> 订单管理
+          </div>
+          <div class="preview-card-body">
+            <iframe src="orders-enhanced.html" frameborder="0"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge" style="background-color: #1890ff;">图标增强</span>
+            <span class="view-button" onclick="switchTab('tab-orders')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- 营销活动卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-bullhorn"></i> 营销活动
+          </div>
+          <div class="preview-card-body">
+            <iframe src="marketing-enhanced.html" frameborder="0"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge" style="background-color: #1890ff;">图标增强</span>
+            <span class="view-button" onclick="switchTab('tab-marketing')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+
+        <!-- 数据分析卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-chart-pie"></i> 数据分析
+          </div>
+          <div class="preview-card-body">
+            <iframe src="analytics-enhanced.html"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge" style="background-color: #1890ff;">增强版</span>
+            <span class="view-button" onclick="switchTab('tab-analytics')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- 回收站卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-chart-pie"></i> 回收站
+          </div>
+          <div class="preview-card-body">
+            <iframe src="trash-enhanced.html"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge" style="background-color: #1890ff;">增强版</span>
+            <span class="view-button" onclick="switchTab('tab-analytics')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- 系统设置卡片 -->
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <i class="fas fa-chart-pie"></i> 系统设置
+          </div>
+          <div class="preview-card-body">
+            <iframe src="settings-enhanced.html"></iframe>
+          </div>
+          <div class="preview-card-footer">
+            <span class="badge" style="background-color: #1890ff;">增强版</span>
+            <span class="view-button" onclick="switchTab('tab-analytics')">
+              查看详情 <i class="fas fa-chevron-right"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 登录页面详情视图 -->
+    <div class="content" id="tab-login">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-sign-in-alt"></i> 登录页面
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="index.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+    
+    <!-- 增强版登录页面详情视图 -->
+    <div class="content" id="tab-login-enhanced">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-sign-in-alt"></i> 增强版登录页面
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="login-enhanced.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+    
+    <!-- 控制台仪表盘详情视图 -->
+    <div class="content" id="tab-dashboard">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-chart-line"></i> 控制台仪表盘
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="dashboard.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+    
+    <!-- 增强版仪表盘详情视图 -->
+    <div class="content" id="tab-dashboard-enhanced">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-chart-line"></i> 增强版仪表盘
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="dashboard-enhanced.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+    
+    <!-- 会员管理详情视图 -->
+    <div class="content" id="tab-members">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-users"></i> 会员管理
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="members.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+
+    <!-- 增强版会员管理详情视图 -->
+    <div class="content" id="tab-members-enhanced">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-users"></i> 增强版会员管理
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="members-enhanced.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+
+    <!-- 商品管理详情视图 -->
+    <div class="content" id="tab-products">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-shopping-bag"></i> 商品管理
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="products-enhanced.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+
+    <!-- 订单管理详情视图 -->
+    <div class="content" id="tab-orders">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-shopping-cart"></i> 订单管理
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="orders-enhanced.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+
+    <!-- 营销活动详情视图 -->
+    <div class="content" id="tab-marketing">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-bullhorn"></i> 营销活动
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="marketing-enhanced.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+
+    <!-- 数据分析详情视图 -->
+    <div class="content" id="tab-analytics">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-bullhorn"></i> 数据分析
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="analytics-enhanced.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+    <div class="content" id="tab-trash">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-bullhorn"></i> 回收站
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="trash-enhanced.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+    <div class="content" id="tab-settings">
+      <div class="prototype-container">
+        <div class="prototype-header">
+          <div class="prototype-title">
+            <i class="fas fa-bullhorn"></i> 系统设置
+          </div>
+          <div class="prototype-actions">
+            <button class="action-button">
+              <i class="fas fa-desktop"></i> 在新窗口打开
+            </button>
+            <button class="action-button primary">
+              <i class="fas fa-code"></i> 查看源码
+            </button>
+          </div>
+        </div>
+        <iframe src="settings-enhanced.html" frameborder="0" class="preview-frame"></iframe>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function switchTab(tabId) {
+      // 隐藏所有内容面板
+      document.querySelectorAll('.content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // 显示选中的内容面板
+      document.getElementById(tabId).classList.add('active');
+      
+      // 更新标签样式
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // 设置当前选中的标签
+      document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+    }
+    
+    // 为按钮添加在新窗口打开页面的功能
+    document.addEventListener('DOMContentLoaded', function() {
+      const openButtons = document.querySelectorAll('.action-button:first-child');
+      openButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const container = this.closest('.prototype-container');
+          const iframe = container.querySelector('iframe');
+          const src = iframe.getAttribute('src');
+          window.open(src, '_blank');
+        });
+      });
+    });
+  </script>
+</body>
+</html> 

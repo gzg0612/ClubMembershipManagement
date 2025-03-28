@@ -1,0 +1,86 @@
+// 全局样式
+
+// 重置样式
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  height: 100%;
+}
+
+// 链接样式
+a {
+  text-decoration: none;
+  color: #409EFF;
+}
+
+// 清除浮动
+.clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+// 通用边距
+.mb-10 {
+  margin-bottom: 10px;
+}
+
+.mr-10 {
+  margin-right: 10px;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+.ml-10 {
+  margin-left: 10px;
+}
+
+// 标题
+.page-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+// 表格样式
+.table-container {
+  margin-top: 15px;
+}
+
+// 操作按钮组
+.operation-group {
+  display: flex;
+  .el-button {
+    padding: 3px 8px;
+    margin-left: 5px;
+  }
+}
+
+// 过滤条件区域
+.filter-container {
+  padding: 15px 0;
+  background-color: #fff;
+  margin-bottom: 15px;
+}
+
+// 分页
+.pagination-container {
+  padding: 15px 0;
+  text-align: right;
+} 

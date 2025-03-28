@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会员管理系统 - 登录</title>
+  <!-- 引入FontAwesome图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: linear-gradient(to right bottom, #1890ff, #36a6ff, #4fbcff, #67d1ff, #80e5ff);
+    }
+    .login-container {
+      display: flex;
+      width: 900px;
+      height: 500px;
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    .login-banner {
+      width: 50%;
+      background-color: #1890ff;
+      padding: 40px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .login-banner h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .login-banner p {
+      font-size: 16px;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin-bottom: 30px;
+      position: relative;
+      z-index: 1;
+    }
+    .banner-icons {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      z-index: 1;
+    }
+    .banner-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      margin-right: 10px;
+      color: white;
+      font-size: 18px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .banner-icon:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-5px);
+    }
+    .decoration {
+      position: absolute;
+      opacity: 0.1;
+    }
+    .circle-1 {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background-color: white;
+      top: -100px;
+      right: -100px;
+    }
+    .circle-2 {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: white;
+      bottom: -50px;
+      left: -50px;
+    }
+    .login-form {
+      width: 50%;
+      padding: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .login-logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1890ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    .login-logo i {
+      margin-right: 10px;
+      font-size: 28px;
+    }
+    .login-title {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .login-subtitle {
+      font-size: 14px;
+      color: #999;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #666;
+      font-size: 14px;
+    }
+    .form-input {
+      width: 100%;
+      height: 45px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      padding: 10px 15px 10px 40px;
+      transition: all 0.3s;
+      font-size: 14px;
+      position: relative;
+    }
+    .form-input:focus {
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      outline: none;
+    }
+    .input-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #bfbfbf;
+    }
+    .input-wrapper {
+      position: relative;
+    }
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+    }
+    .remember-me {
+      margin-right: 8px;
+      cursor: pointer;
+    }
+    .checkbox-label {
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
+    }
+    .forgot-password {
+      font-size: 14px;
+      color: #1890ff;
+      text-decoration: none;
+    }
+    .forgot-password:hover {
+      color: #40a9ff;
+    }
+    .login-button {
+      width: 100%;
+      height: 45px;
+      background-color: #1890ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .login-button:hover {
+      background-color: #40a9ff;
+    }
+    .login-button:focus {
+      outline: none;
+    }
+    .form-footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #999;
+    }
+    .form-footer a {
+      color: #1890ff;
+      text-decoration: none;
+    }
+    .form-footer a:hover {
+      color: #40a9ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <!-- 左侧登录横幅 -->
+    <div class="login-banner">
+      <h1><i class="fas fa-users-gear"></i> 会员管理系统</h1>
+      <p>欢迎使用会员管理系统，高效管理您的会员、商品、订单和营销活动。</p>
+      
+      <!-- 装饰性圆形 -->
+      <div class="decoration circle-1"></div>
+      <div class="decoration circle-2"></div>
+      
+      <!-- 底部图标 -->
+      <div class="banner-icons">
+        <div class="banner-icon">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="banner-icon">
+          <i class="fas fa-shopping-bag"></i>
+        </div>
+        <div class="banner-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="banner-icon">
+          <i class="fas fa-bullhorn"></i>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 右侧登录表单 -->
+    <div class="login-form">
+      <div class="login-header">
+        <div class="login-logo">
+          <i class="fas fa-users-gear"></i>
+          <span>会员管理系统</span>
+        </div>
+        <div class="login-title">管理员登录</div>
+        <div class="login-subtitle">请输入您的账号和密码</div>
+      </div>
+      
+      <form>
+        <div class="form-group">
+          <label class="form-label">用户名</label>
+          <div class="input-wrapper">
+            <i class="fas fa-user input-icon"></i>
+            <input type="text" class="form-input" placeholder="请输入用户名">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" class="form-input" placeholder="请输入密码">
+          </div>
+        </div>
+        
+        <div class="remember-forgot">
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="remember-me" class="remember-me">
+            <label for="remember-me" class="checkbox-label">记住我</label>
+          </div>
+          <a href="#" class="forgot-password">忘记密码?</a>
+        </div>
+        
+        <button type="submit" class="login-button">
+          <i class="fas fa-sign-in-alt"></i> 登录
+        </button>
+      </form>
+      
+      <div class="form-footer">
+        还没有账号? <a href="#">联系管理员</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 

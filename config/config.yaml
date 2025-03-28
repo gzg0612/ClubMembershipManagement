@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+database:
+  host: localhost
+  port: 3306
+  user: root
+  password: root
+  dbname: huiyuanguanli
+
+redis:
+  host: localhost
+  port: 6379
+  password: ""
+  db: 0
+
+tencent_cloud:
+  secret_id: "your_secret_id"
+  secret_key: "your_secret_key"
+  app_id: "your_app_id"
+  sign_name: "your_sign_name"
+  template_id: "your_template_id"
+
+email:
+  host: "smtp.example.com"
+  port: 587
+  username: "your_email@example.com"
+  password: "your_email_password"
+  from: "your_email@example.com" 

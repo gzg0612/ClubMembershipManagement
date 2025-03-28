@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会员管理系统 - 登录</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background-color: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-container {
+      display: flex;
+      width: 900px;
+      height: 500px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .login-banner {
+      flex: 1;
+      background-color: #1890ff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      padding: 40px;
+    }
+    .login-banner h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .login-banner p {
+      font-size: 16px;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .login-form {
+      flex: 1;
+      background-color: white;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .login-header {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    .login-header h2 {
+      font-size: 24px;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #666;
+    }
+    .form-control {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 0 15px;
+      font-size: 14px;
+    }
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .form-footer a {
+      font-size: 14px;
+      color: #1890ff;
+      text-decoration: none;
+    }
+    .btn-login {
+      width: 100%;
+      height: 40px;
+      background-color: #1890ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-banner">
+      <h1>会员管理系统</h1>
+      <p>专业的会员管理解决方案，帮助您提升会员价值，增强客户粘性，促进业务增长。</p>
+    </div>
+    <div class="login-form">
+      <div class="login-header">
+        <h2>系统登录</h2>
+      </div>
+      <form>
+        <div class="form-group">
+          <label for="username">用户名</label>
+          <input type="text" id="username" class="form-control" placeholder="请输入用户名">
+        </div>
+        <div class="form-group">
+          <label for="password">密码</label>
+          <input type="password" id="password" class="form-control" placeholder="请输入密码">
+        </div>
+        <div class="form-footer">
+          <label>
+            <input type="checkbox"> 记住我
+          </label>
+          <a href="#">忘记密码？</a>
+        </div>
+        <button type="submit" class="btn-login">登 录</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html> 

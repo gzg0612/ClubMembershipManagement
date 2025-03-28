@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会员管理系统 - 回收站</title>
+  <!-- 引入FontAwesome图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+    }
+    .app-container {
+      display: flex;
+      width: 100%;
+    }
+    
+    /* 侧边栏样式 */
+    .sidebar {
+      width: 220px;
+      background-color: #001529;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s;
+    }
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .menu {
+      padding: 10px 0;
+      flex-grow: 1;
+    }
+    .menu-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.65);
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+    .menu-item:hover {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+    .menu-item.active {
+      color: white;
+      background-color: #1890ff;
+      border-left-color: white;
+    }
+    .sidebar-footer {
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 30px;
+      height: 30px;
+      background-color: #1890ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+    }
+    
+    /* 主内容区样式 */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #f0f2f5;
+    }
+    .header {
+      background-color: white;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      padding: 0 20px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+    }
+    .breadcrumb span {
+      margin: 0 5px;
+      color: #999;
+    }
+    .header-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .header-action {
+      font-size: 16px;
+      color: #666;
+      cursor: pointer;
+      position: relative;
+    }
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: #f5222d;
+      color: white;
+      font-size: 12px;
+      border-radius: 10px;
+      padding: 0 5px;
+      min-width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* 内容区域样式 */
+    .content {
+      padding: 20px;
+      flex-grow: 1;
+    }
+    .page-title {
+      font-size: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    /* 工具栏样式 */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      background-color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    }
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      max-width: 500px;
+    }
+    .search-input {
+      padding: 8px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      flex: 1;
+      transition: all 0.3s;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+    .search-button {
+      padding: 8px 16px;
+      background-color: #1890ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s;
+    }
+    .search-button:hover {
+      background-color: #40a9ff;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .action-btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    .primary-btn {
+      background-color: #1890ff;
+      color: white;
+      border: none;
+    }
+    .primary-btn:hover {
+      background-color: #40a9ff;
+    }
+    .warning-btn {
+      background-color: #ff4d4f;
+      color: white;
+      border: none;
+    }
+    .warning-btn:hover {
+      background-color: #ff7875;
+    }
+    .default-btn {
+      background-color: #f4f4f5;
+      color: #606266;
+      border: 1px solid #dcdfe6;
+    }
+    .default-btn:hover {
+      color: #40a9ff;
+      border-color: #40a9ff;
+    }
+    
+    /* 筛选条件区 */
+    .filter-bar {
+      background-color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    }
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filter-label {
+      color: #606266;
+      font-size: 14px;
+    }
+    .filter-select {
+      padding: 6px 10px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      outline: none;
+      min-width: 120px;
+      transition: all 0.3s;
+    }
+    .filter-select:focus {
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+    
+    /* 空状态样式 */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 0;
+      text-align: center;
+      color: #999;
+    }
+    .empty-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      color: #d9d9d9;
+    }
+    .empty-text {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    
+    /* 数据表格样式 */
+    .data-table {
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      margin-bottom: 20px;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table th, .table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .table th {
+      background-color: #fafafa;
+      font-weight: 500;
+      color: #606266;
+      white-space: nowrap;
+    }
+    .table tr:hover td {
+      background-color: #f5f7fa;
+    }
+    .table-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    
+    /* 标签样式 */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-right: 5px;
+    }
+    .tag-item {
+      background-color: #e6f7ff;
+      color: #1890ff;
+    }
+    .tag-user {
+      background-color: #f6ffed;
+      color: #52c41a;
+    }
+    .tag-order {
+      background-color: #fff7e6;
+      color: #fa8c16;
+    }
+    .tag-product {
+      background-color: #f9f0ff;
+      color: #722ed1;
+    }
+    .tag-marketing {
+      background-color: #fff2f0;
+      color: #f5222d;
+    }
+    
+    /* 回收站特有样式 */
+    .row-actions {
+      display: flex;
+      gap: 15px;
+    }
+    .row-action {
+      color: #1890ff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.3s;
+    }
+    .row-action:hover {
+      color: #40a9ff;
+    }
+    .row-action.warning {
+      color: #ff4d4f;
+    }
+    .row-action.warning:hover {
+      color: #ff7875;
+    }
+    .deleted-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .deleted-name {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .deleted-id {
+      font-size: 12px;
+      color: #999;
+    }
+    .deleted-time {
+      font-size: 12px;
+      color: #999;
+    }
+    .deleted-by {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: #999;
+      margin-top: 3px;
+    }
+    .user-avatar {
+      width: 20px;
+      height: 20px;
+      background-color: #1890ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: white;
+    }
+    
+    /* 分页控件样式 */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      border-top: 1px solid #e8e8e8;
+    }
+    .pages {
+      display: flex;
+      gap: 5px;
+    }
+    .page-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .page-item:hover {
+      border-color: #1890ff;
+      color: #1890ff;
+    }
+    .page-item.active {
+      background-color: #1890ff;
+      border-color: #1890ff;
+      color: white;
+    }
+    .page-size {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .page-size-select {
+      padding: 6px 10px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      outline: none;
+    }
+    
+    /* 对话框样式 */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 400px;
+      overflow: hidden;
+    }
+    .modal-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-close {
+      font-size: 16px;
+      color: #999;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .modal-content {
+      margin-bottom: 20px;
+    }
+    .modal-footer {
+      padding: 10px 20px 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-users-gear"></i>
+        <div class="logo">会员管理系统</div>
+      </div>
+      <div class="menu">
+        <div class="menu-item">
+          <i class="fas fa-chart-line"></i>
+          <span>控制台</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-users"></i>
+          <span>会员管理</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-shopping-bag"></i>
+          <span>商品管理</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-bullhorn"></i>
+          <span>营销活动</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-shopping-cart"></i>
+          <span>订单管理</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-chart-pie"></i>
+          <span>数据分析</span>
+        </div>
+        <div class="menu-item active">
+          <i class="fas fa-trash-can"></i>
+          <span>回收站</span>
+        </div>
+        <div class="menu-item">
+          <i class="fas fa-gear"></i>
+          <span>系统设置</span>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div>管理员</div>
+        </div>
+        <i class="fas fa-sign-out-alt" style="cursor: pointer;"></i>
+      </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+      <!-- 页头区域 -->
+      <div class="header">
+        <div class="breadcrumb">
+          <a style="color: #1890ff;">首页</a>
+          <span><i class="fas fa-chevron-right" style="font-size: 12px;"></i></span>
+          <a>回收站</a>
+        </div>
+        <div class="header-right">
+          <div class="header-action">
+            <i class="fas fa-bell"></i>
+            <div class="notification-badge">3</div>
+          </div>
+          <div class="header-action">
+            <i class="fas fa-message"></i>
+            <div class="notification-badge">5</div>
+          </div>
+          <div class="header-action">
+            <i class="fas fa-expand"></i>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 内容区域 -->
+      <div class="content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <i class="fas fa-trash-can fa-lg"></i> 回收站
+        </div>
+        
+        <!-- 工具栏 -->
+        <div class="toolbar">
+          <div class="search-box">
+            <input type="text" placeholder="搜索已删除内容..." class="search-input">
+            <button class="search-button">
+              <i class="fas fa-search"></i> 搜索
+            </button>
+          </div>
+          <div class="action-buttons">
+            <button class="action-btn default-btn">
+              <i class="fas fa-undo"></i> 批量恢复
+            </button>
+            <button class="action-btn warning-btn">
+              <i class="fas fa-fire"></i> 清空回收站
+            </button>
+          </div>
+        </div>
+        
+        <!-- 筛选条件 -->
+        <div class="filter-bar">
+          <div class="filter-item">
+            <div class="filter-label"><i class="fas fa-filter"></i> 内容类型:</div>
+            <select class="filter-select">
+              <option value="">全部类型</option>
+              <option value="product">商品</option>
+              <option value="member">会员</option>
+              <option value="order">订单</option>
+              <option value="marketing">营销活动</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <div class="filter-label"><i class="fas fa-calendar"></i> 删除时间:</div>
+            <select class="filter-select">
+              <option value="">全部时间</option>
+              <option value="today">今天</option>
+              <option value="week">本周</option>
+              <option value="month">本月</option>
+              <option value="older">更早</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <div class="filter-label"><i class="fas fa-user"></i> 操作人:</div>
+            <select class="filter-select">
+              <option value="">全部</option>
+              <option value="admin">管理员</option>
+              <option value="editor">编辑</option>
+              <option value="operator">操作员</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- 数据表格 -->
+        <div class="data-table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">
+                  <input type="checkbox" class="table-checkbox">
+                </th>
+                <th>删除内容</th>
+                <th>内容类型</th>
+                <th>删除时间</th>
+                <th>操作人</th>
+                <th>自动清除时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <input type="checkbox" class="table-checkbox">
+                </td>
+                <td>
+                  <div class="deleted-info">
+                    <div class="deleted-name">高级会员专享礼盒</div>
+                    <div class="deleted-id">ID: PRD001</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="tag tag-product">
+                    <i class="fas fa-shopping-bag"></i> 商品
+                  </div>
+                </td>
+                <td>2023-03-15 14:22:36</td>
+                <td>
+                  <div class="deleted-by">
+                    <div class="user-avatar">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <span>管理员</span>
+                  </div>
+                </td>
+                <td>2023-04-15 14:22:36</td>
+                <td>
+                  <div class="row-actions">
+                    <div class="row-action">
+                      <i class="fas fa-undo"></i> 恢复
+                    </div>
+                    <div class="row-action warning">
+                      <i class="fas fa-fire"></i> 彻底删除
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input type="checkbox" class="table-checkbox">
+                </td>
+                <td>
+                  <div class="deleted-info">
+                    <div class="deleted-name">张三</div>
+                    <div class="deleted-id">ID: MBR108</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="tag tag-user">
+                    <i class="fas fa-user"></i> 会员
+                  </div>
+                </td>
+                <td>2023-03-12 09:15:42</td>
+                <td>
+                  <div class="deleted-by">
+                    <div class="user-avatar">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <span>编辑</span>
+                  </div>
+                </td>
+                <td>2023-04-12 09:15:42</td>
+                <td>
+                  <div class="row-actions">
+                    <div class="row-action">
+                      <i class="fas fa-undo"></i> 恢复
+                    </div>
+                    <div class="row-action warning">
+                      <i class="fas fa-fire"></i> 彻底删除
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input type="checkbox" class="table-checkbox">
+                </td>
+                <td>
+                  <div class="deleted-info">
+                    <div class="deleted-name">双十一全场8折</div>
+                    <div class="deleted-id">ID: MKT023</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="tag tag-marketing">
+                    <i class="fas fa-bullhorn"></i> 营销活动
+                  </div>
+                </td>
+                <td>2023-03-10 16:42:08</td>
+                <td>
+                  <div class="deleted-by">
+                    <div class="user-avatar">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <span>管理员</span>
+                  </div>
+                </td>
+                <td>2023-04-10 16:42:08</td>
+                <td>
+                  <div class="row-actions">
+                    <div class="row-action">
+                      <i class="fas fa-undo"></i> 恢复
+                    </div>
+                    <div class="row-action warning">
+                      <i class="fas fa-fire"></i> 彻底删除
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input type="checkbox" class="table-checkbox">
+                </td>
+                <td>
+                  <div class="deleted-info">
+                    <div class="deleted-name">订单 #ORD20221008009</div>
+                    <div class="deleted-id">客户: 钱七</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="tag tag-order">
+                    <i class="fas fa-shopping-cart"></i> 订单
+                  </div>
+                </td>
+                <td>2023-03-08 11:36:55</td>
+                <td>
+                  <div class="deleted-by">
+                    <div class="user-avatar">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <span>操作员</span>
+                  </div>
+                </td>
+                <td>2023-04-08 11:36:55</td>
+                <td>
+                  <div class="row-actions">
+                    <div class="row-action">
+                      <i class="fas fa-undo"></i> 恢复
+                    </div>
+                    <div class="row-action warning">
+                      <i class="fas fa-fire"></i> 彻底删除
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input type="checkbox" class="table-checkbox">
+                </td>
+                <td>
+                  <div class="deleted-info">
+                    <div class="deleted-name">精选进口坚果礼盒</div>
+                    <div class="deleted-id">ID: PRD002</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="tag tag-product">
+                    <i class="fas fa-shopping-bag"></i> 商品
+                  </div>
+                </td>
+                <td>2023-03-05 15:30:12</td>
+                <td>
+                  <div class="deleted-by">
+                    <div class="user-avatar">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <span>编辑</span>
+                  </div>
+                </td>
+                <td>2023-04-05 15:30:12</td>
+                <td>
+                  <div class="row-actions">
+                    <div class="row-action">
+                      <i class="fas fa-undo"></i> 恢复
+                    </div>
+                    <div class="row-action warning">
+                      <i class="fas fa-fire"></i> 彻底删除
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- 分页部分 -->
+          <div class="pagination">
+            <div>已选择 0 项</div>
+            <div class="pages">
+              <div class="page-item">
+                <i class="fas fa-angle-left"></i>
+              </div>
+              <div class="page-item active">1</div>
+              <div class="page-item">2</div>
+              <div class="page-item">3</div>
+              <div class="page-item">
+                <i class="fas fa-ellipsis-h"></i>
+              </div>
+              <div class="page-item">10</div>
+              <div class="page-item">
+                <i class="fas fa-angle-right"></i>
+              </div>
+            </div>
+            <div class="page-size">
+              <span>每页显示</span>
+              <select class="page-size-select">
+                <option>10条</option>
+                <option>20条</option>
+                <option>50条</option>
+                <option>100条</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 确认对话框 -->
+  <div class="modal-backdrop" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fas fa-exclamation-triangle" style="color: #faad14;"></i> 确认彻底删除
+        </div>
+        <div class="modal-close">
+          <i class="fas fa-times"></i>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-content">
+          您确定要彻底删除所选内容吗？此操作无法撤销，删除后数据将无法恢复。
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn default-btn">取消</button>
+        <button class="action-btn warning-btn">确认删除</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
